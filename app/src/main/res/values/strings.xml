@@ -6,4 +6,5 @@
     <string name="action_map">Peta</string>
     <string name="vote_suara">Vote Suara</string>
     <string name="vote_manual">Vote manual</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

@@ -2,7 +2,6 @@ package com.aldoapps.suararakyat;
 
 import android.app.Application;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -18,8 +17,6 @@ public class SuaraRakyatApplication extends Application {
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "AdceJKkt7p7M00NIB72GbtgQZOWkE4x13Mr8f3dk",
                 "6hRqK43i9SJfhtcH5e70YYc0wrIztim4FlBP99V3");
-
-        Fresco.initialize(this);
     }
 
 }

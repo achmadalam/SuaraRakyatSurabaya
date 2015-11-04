@@ -1,22 +1,13 @@
 package com.aldoapps.suararakyat;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_map) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
             return true;
         }
 
