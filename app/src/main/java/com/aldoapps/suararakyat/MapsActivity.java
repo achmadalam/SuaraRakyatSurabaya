@@ -85,7 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<Marker> markerList = new ArrayList<>();
         Random random = new Random(123);
 
-        for(int i = 0; i < 15; i++){
+        for(int i = 0; i < 115; i++){
             float randomLat = random.nextFloat() / 100f;
             float randomLan = random.nextFloat() / 100f;
             LatLng surabaya = new LatLng(-7.2653 + randomLat, 112.7425 + randomLan);

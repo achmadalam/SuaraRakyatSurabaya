@@ -64,6 +64,14 @@ public class MainFragment extends Fragment {
 
         mManualBtn.setIcon(R.drawable.ic_action_pin);
 
+        mCandidateOneImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return view;
     }
 

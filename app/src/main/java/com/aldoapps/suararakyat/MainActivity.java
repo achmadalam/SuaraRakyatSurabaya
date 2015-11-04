@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,13 +19,13 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         MainFragment mainFragment = (MainFragment)
-                fragmentManager.findFragmentById(R.id.frame_container);
+                fragmentManager.findFragmentById(R.id.fragment_container);
 
         if(mainFragment == null){
             mainFragment = MainFragment.newInstance();
 
             fragmentManager.beginTransaction()
-                    .add(R.id.frame_container, mainFragment)
+                    .add(R.id.fragment_container, mainFragment)
                     .commit();
         }
 
