@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_margin="@dimen/padding_large"
         >
 
         <LinearLayout
@@ -25,9 +24,11 @@
 
             <ImageView
                 android:id="@+id/candidate_one"
-                android:layout_width="200dp"
+                android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_centerInParent="true"
+                android:src="@drawable/candidate_one"
+                android:scaleType="centerCrop"
                 />
 
             <TextView
@@ -57,15 +58,17 @@
 
             <ImageView
                 android:id="@+id/candidate_two"
-                android:layout_width="200dp"
+                android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_centerInParent="true"
+                android:src="@drawable/candidate_two"
+                android:scaleType="centerCrop"
                 />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Risma Wahyu"
+                android:text="Rasiyo Lucy"
                 android:textStyle="bold"
                 />
 
