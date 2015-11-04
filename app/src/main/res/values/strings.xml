@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">Suara Rakyat</string>
+    <string name="app_name">Suara Rakyat Surabaya</string>
     <string name="action_settings">Settings</string>
+    <string name="voice_choose_your_candidate">Silahkan bicara pilihan Anda</string>
+    <string name="locale">in_ID</string>
+    <string name="action_map">Peta</string>
 </resources>

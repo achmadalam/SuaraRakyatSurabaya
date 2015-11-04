@@ -1,8 +1,10 @@
 package com.aldoapps.suararakyat;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -10,17 +12,13 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int SPEECH_REQUEST_CODE = 1692;
-
-    private FloatingActionButton actionA, actionB;
-    private FloatingActionsMenu menuMultipleActions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,27 +27,17 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        menuMultipleActions =
-                (FloatingActionsMenu) findViewById(R.id.multiple_actions);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        MainFragment mainFragment = (MainFragment)
+                fragmentManager.findFragmentById(R.id.frame_container);
 
-        actionA =
-                (FloatingActionButton) findViewById(R.id.action_a);
+        if(mainFragment == null){
+            mainFragment = MainFragment.newInstance();
 
-        actionA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak up hommies");
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "in_ID");
-                startActivityForResult(intent, SPEECH_REQUEST_CODE);
-            }
-        });
-
-        final FloatingActionButton actionB =
-                (FloatingActionButton) findViewById(R.id.action_b);
-
+            fragmentManager.beginTransaction()
+                    .add(R.id.frame_container, mainFragment)
+                    .commit();
+        }
 
     }
 
@@ -62,24 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK){
-            List<String> results = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS
-            );
-
-            for(String asfd : results){
-                Log.d("asdf", asfd);
-            }
-        }
-
-
-        menuMultipleActions.collapse();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -87,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_map) {
             return true;
         }
 
