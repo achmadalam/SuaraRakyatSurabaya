@@ -21,18 +21,21 @@
             >
 
             <TextView
+                android:id="@+id/pekerjaan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Walikota Surabaya"
                 />
 
             <TextView
+                android:id="@+id/tempat_tanggal_lahir"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="20 November 1961"
+                android:text="Kediri, 20 November 1961"
                 />
 
             <TextView
+                android:id="@+id/partai"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="PDI Perjuangan"
@@ -46,6 +49,7 @@
                 />
 
             <TextView
+                android:id="@+id/visi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Surabaya Lebih Sejahtera, Berkeadilan, Berdaya Saing, dan Berkepribadian."
@@ -59,7 +63,8 @@
                 android:textStyle="bold"
                 />
 
-            <TextView
+                <TextView
+                android:id="@+id/misi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/visi_bu_risma"
