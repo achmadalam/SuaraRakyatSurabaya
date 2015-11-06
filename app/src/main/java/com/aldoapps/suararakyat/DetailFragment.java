@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aldoapps.suararakyat.model.Candidate;
+import com.aldoapps.suararakyat.model.VisionMission;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -31,6 +32,7 @@ import butterknife.ButterKnife;
  */
 public class DetailFragment extends Fragment {
 
+    @Bind(R.id.nama) TextView mNama;
     @Bind(R.id.pekerjaan) TextView mPekerjaan;
     @Bind(R.id.tempat_tanggal_lahir) TextView mTTL;
     @Bind(R.id.partai) TextView mPartai;
@@ -43,10 +45,47 @@ public class DetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String endpointKpu = "http://api.pemiluapi.org/candidate-pilkada-surabaya/api/candidates?apiKey=06ec082d057daa3d310b27483cc3962e";
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(
+        String endpointVisionMission = "http://api.pemiluapi.org/candidate-pilkada-surabaya/api/vision_missions?apiKey=06ec082d057daa3d310b27483cc3962e";
+        String endpointCandidate = "http://api.pemiluapi.org/candidate-pilkada-surabaya/api/candidates?apiKey=06ec082d057daa3d310b27483cc3962e";
+
+        JsonObjectRequest visionMissionRequest = new JsonObjectRequest(
                 Request.Method.GET,
-                endpointKpu,
+                endpointVisionMission,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray visionMissionList = response
+                                    .getJSONObject("data")
+                                    .getJSONObject("results")
+                                    .getJSONArray("vision_missions");
+
+                            Gson gson = new Gson();
+                            VisionMission visionMissionOne = gson
+                                    .fromJson(visionMissionList.get(0).toString(),
+                                            VisionMission.class);
+                            VisionMission visionMissionTwo = gson
+                                    .fromJson(visionMissionList.get(1).toString(),
+                                            VisionMission.class);
+
+                            mVisi.setText(visionMissionOne.getVision());
+                            mMisi.setText(visionMissionOne.getMision());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }
+        );
+
+        JsonObjectRequest candidateRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                endpointCandidate,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -61,6 +100,20 @@ public class DetailFragment extends Fragment {
                             Candidate candidateOne = gson.fromJson(candidateOneJSON.toString(), Candidate.class);
                             Candidate candidateTwo = gson.fromJson(candidateTwoJSON.toString(), Candidate.class);
 
+                            String candidateName = candidateOne.getParticipants().get(0).getName()
+                                    + " dan "
+                                    + candidateOne.getParticipants().get(1).getName();
+
+                            String candidateOccupation =
+                                    candidateOne.getParticipants().get(0).getWork()
+                                    + " dan "
+                                    + candidateOne.getParticipants().get(1).getWork();
+
+                            mNama.setText(candidateName);
+                            mPekerjaan.setText(candidateOccupation);
+                            mPartai.setText(candidateTwo.getEndorsement());
+
+
                             Log.d("asdf", "candidate 1 " + candidateList.getJSONObject(0).getInt("id"));
                             Log.d("asdf", "participant 1 " + candidateOne.getParticipants().get(0).getName());
                             Log.d("asdf", "participant 2 " + candidateOne.getParticipants().get(1).getName());
@@ -71,7 +124,6 @@ public class DetailFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -83,7 +135,8 @@ public class DetailFragment extends Fragment {
         );
 
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(jsonRequest);
+        requestQueue.add(candidateRequest);
+        requestQueue.add(visionMissionRequest);
     }
 
     public static DetailFragment newInstance(){
