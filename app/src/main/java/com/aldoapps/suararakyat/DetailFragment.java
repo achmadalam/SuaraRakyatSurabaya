@@ -109,6 +109,9 @@ public class DetailFragment extends Fragment {
                                     + " dan "
                                     + candidateOne.getParticipants().get(1).getWork();
 
+                            String candidateParty =
+                                    candidateOne.getEndorsement();
+
                             mNama.setText(candidateName);
                             mPekerjaan.setText(candidateOccupation);
                             mPartai.setText(candidateTwo.getEndorsement());
@@ -134,9 +137,8 @@ public class DetailFragment extends Fragment {
                 }
         );
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(candidateRequest);
-        requestQueue.add(visionMissionRequest);
+        SuaraRakyatApplication.getInstance().addToRequestQueue(candidateRequest);
+        SuaraRakyatApplication.getInstance().addToRequestQueue(visionMissionRequest);
     }
 
     public static DetailFragment newInstance(){
