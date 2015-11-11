@@ -1,20 +1,24 @@
 package com.aldoapps.suararakyat;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import android.widget.Toast;
 
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -22,19 +26,37 @@ import butterknife.ButterKnife;
 /**
  * Created by user on 03/11/2015.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements TextToSpeech.OnInitListener {
 
     private static final int SPEECH_REQUEST_CODE = 1692;
 
-    @Bind(R.id.vote_by_manual) FloatingActionButton mManualBtn;
-    @Bind(R.id.vote_by_voice) FloatingActionButton mVoiceBtn;
-    @Bind(R.id.fab_menu) FloatingActionsMenu mFabMenu;
-    @Bind(R.id.candidate_one) ImageView mCandidateOneImg;
+    private static final int TTS_DATA_CHECK_CODE = 16;
+    private static final String SPEECH_CODE = "MERDEKA";
 
+    private static final int MENU_CALON_PERTAMA = 0;
+    private static final int MENU_CALON_KEDUA = 1;
+    private static final int MENU_JUMLAH_SUARA = 2;
+    private static final int MENU_UNDEFINED = 3;
+
+
+    private TextToSpeech mTts;
+
+    @Bind(R.id.fabulous_button) FloatingActionButton mVoiceBtn;
+    @Bind(R.id.candidate_one) ImageView mCandidateOneImg;
+    @Bind(R.id.candidate_two) ImageView mCandidateTwoImg;
+    private int mCurrentMenu = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /**
+         * Inspect first whether user has already installed TTS data
+         * for this device
+         */
+        Intent checkTtsIntent = new Intent();
+        checkTtsIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkTtsIntent, TTS_DATA_CHECK_CODE);
     }
 
     public static MainFragment newInstance(){
@@ -49,7 +71,6 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
 
-        mVoiceBtn.setIcon(R.drawable.ic_action_microphone);
         mVoiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,8 +83,6 @@ public class MainFragment extends Fragment {
             }
         });
 
-        mManualBtn.setIcon(R.drawable.ic_action_pin);
-
         mCandidateOneImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,10 +91,21 @@ public class MainFragment extends Fragment {
             }
         });
 
+        mCandidateTwoImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mTts.speak(getString(R.string.text),
+                            TextToSpeech.QUEUE_FLUSH, null, SPEECH_CODE);
+                }
+            }
+        });
+
         return view;
     }
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -86,11 +116,120 @@ public class MainFragment extends Fragment {
                     RecognizerIntent.EXTRA_RESULTS
             );
 
-            for(String asfd : results){
-                Log.d("asdf", asfd);
+            for(String token : results){
+                Log.d("asdf", "token" + token);
+                if(token.contains("pertama") ||
+                    token.contains("rasiyo") ||
+                    token.contains("lucy")){
+
+                    mCurrentMenu = MENU_CALON_PERTAMA;
+
+                }else if(token.contains("kedua") ||
+                        token.contains("risma") ||
+                        token.contains("whisnu")){
+
+                    mCurrentMenu = MENU_CALON_KEDUA;
+
+                }else if(token.contains("jumlah") ||
+                        token.contains("suara")){
+
+                    mCurrentMenu = MENU_JUMLAH_SUARA;
+
+                }else{
+
+                    mCurrentMenu = MENU_UNDEFINED;
+                }
+            }
+
+            Log.d("asdf", "mCurent Menu " + mCurrentMenu);
+
+            switch (mCurrentMenu){
+                case MENU_CALON_PERTAMA:
+                    mTts.speak("anda memilih informasi calon pertama",
+                            TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    break;
+                case MENU_CALON_KEDUA:
+                    mTts.speak("anda memilih informasi calon kedua",
+                            TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    break;
+                case MENU_JUMLAH_SUARA:
+                    mTts.speak("anda memilih informasi jumlah suara",
+                            TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    break;
+                case MENU_UNDEFINED:
+//                    mTts.speak("maaf tidak kede")
             }
         }
 
-        mFabMenu.collapse();
+        if(requestCode == TTS_DATA_CHECK_CODE){
+            // Success!
+            if(resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS){
+                mTts = new TextToSpeech(getActivity(), this);
+                Log.d("asdf", "ada data tts");
+            }else{
+                //  fail, attempt to install tts
+                Intent installTts = new Intent();
+                installTts.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installTts);
+            }
+        }
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onInit(int status) {
+        final Locale indonesiaLocale = new Locale("in", "ID");
+        if(status == TextToSpeech.SUCCESS){
+            /**
+             * Find existing Indonesian Language in System
+             * If doesn't exist, back to default phone :(
+             */
+            final Locale[] availableLocales=Locale.getAvailableLocales();
+            for(final Locale locale : availableLocales){
+                if(locale.getCountry().equalsIgnoreCase(indonesiaLocale.getCountry())
+                        && locale.getLanguage().equalsIgnoreCase(indonesiaLocale.getLanguage())) {
+                    mTts.setLanguage(indonesiaLocale);
+                }
+            }
+
+            /**
+             * Finished speaking listener
+             */
+            mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+                    Log.d("asdf", "start " + utteranceId);
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+                    Log.d("asdf", "done " + utteranceId);
+                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                    intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_choose_your_candidate));
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, getString(R.string.locale));
+                    startActivityForResult(intent, SPEECH_REQUEST_CODE);
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+                    Log.d("asdf", "error " + utteranceId);
+                }
+            });
+
+        }else if(status == TextToSpeech.ERROR){
+            Toast.makeText(getActivity(), "error bang ", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if(mTts != null){
+            mTts.shutdown();
+        }
+
+        super.onDestroy();
     }
 }

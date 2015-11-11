@@ -8,4 +8,11 @@
     <string name="vote_manual">Vote manual</string>
     <string name="title_activity_maps">Map</string>
     <string name="visi_bu_risma">1. Meningkatkan kesejahteraan rakyat yang berkeadilan.\n2. Meningkatkan pembangunan ekonomi yang inklusif, dan berdaya saing.\n3. Meningkatkan pembangunan pariwisata, dan revitalisasi budaya lokal, serta kesalehan sosial.\n4. Meningkatkan pembangunan infrastuktur yang merata, dan pelestarian lingkungan hidup.\n5. Meningkatkan reformasi birokrasi dan pelayanan publik</string>
+    <string name="text">Informasi piwali    </string>
+    <string name="enter_no_ktp">Masukkan Nama dan No. KTP sesuai yang tertera dalam KTP</string>
+    <!--<string name="text">Informasi piwali, untuk informasi calon pertama silahkan-->
+        <!--katakan calon pertama. Untuk informasi calon kedua silahkan katakan calon kedua.-->
+        <!--Untuk informasi perolehan suara quick count silahkan katakan jumlah suara.-->
+    <!--</string>-->
+
 </resources>
