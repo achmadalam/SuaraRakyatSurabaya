@@ -1,6 +1,5 @@
 package com.aldoapps.suararakyat;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -105,59 +104,92 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     }
 
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == SPEECH_REQUEST_CODE &&
                 resultCode == MainActivity.RESULT_OK){
+
+            /**
+             * this return a list of guessed words
+             * sorted in descending order
+             * the 0 index is the most accurate one
+             */
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS
             );
+            String token = results.get(0);
 
-            for(String token : results){
-                Log.d("asdf", "token" + token);
-                if(token.contains("pertama") ||
+            Log.d("asdf", "kalimat: " + token);
+            if(token.contains("1") ||
+                    token.contains("satu") ||
+                    token.contains("pertama") ||
                     token.contains("rasiyo") ||
                     token.contains("lucy")){
 
-                    mCurrentMenu = MENU_CALON_PERTAMA;
+                mCurrentMenu = MENU_CALON_PERTAMA;
 
-                }else if(token.contains("kedua") ||
-                        token.contains("risma") ||
-                        token.contains("whisnu")){
+            }else if(
+                    token.contains("2") ||
+                            token.contains("dua") ||
+                            token.contains("kedua") ||
+                            token.contains("risma") ||
+                            token.contains("whisnu")){
 
-                    mCurrentMenu = MENU_CALON_KEDUA;
+                mCurrentMenu = MENU_CALON_KEDUA;
 
-                }else if(token.contains("jumlah") ||
-                        token.contains("suara")){
+            }else if(
+                    token.contains("3") ||
+                            token.contains("tiga") ||
+                            token.contains("jumlah") ||
+                            token.contains("suara")){
 
-                    mCurrentMenu = MENU_JUMLAH_SUARA;
+                mCurrentMenu = MENU_JUMLAH_SUARA;
 
-                }else{
+            }else{
 
-                    mCurrentMenu = MENU_UNDEFINED;
-                }
+                mCurrentMenu = MENU_UNDEFINED;
             }
 
             Log.d("asdf", "mCurent Menu " + mCurrentMenu);
 
             switch (mCurrentMenu){
                 case MENU_CALON_PERTAMA:
-                    mTts.speak("anda memilih informasi calon pertama",
-                            TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mTts.speak("anda memilih informasi calon pertama",
+                                TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    }else{
+                        mTts.speak("anda memilih informasi calon pertama",
+                                TextToSpeech.QUEUE_FLUSH, null);
+                    }
                     break;
                 case MENU_CALON_KEDUA:
-                    mTts.speak("anda memilih informasi calon kedua",
-                            TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mTts.speak("anda memilih informasi calon kedua",
+                                TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    }else{
+                        mTts.speak("anda memilih informasi calon kedua",
+                                TextToSpeech.QUEUE_FLUSH, null);
+                    }
                     break;
                 case MENU_JUMLAH_SUARA:
-                    mTts.speak("anda memilih informasi jumlah suara",
-                            TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mTts.speak("anda memilih informasi jumlah suara",
+                                TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    }else{
+                        mTts.speak("anda memilih informasi jumlah suara",
+                                TextToSpeech.QUEUE_FLUSH, null);
+                    }
                     break;
                 case MENU_UNDEFINED:
-//                    mTts.speak("maaf tidak kede")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mTts.speak("Maaf suara Anda ga kedengeran mas, coba lagi aja",
+                                TextToSpeech.QUEUE_FLUSH, null, "satu");
+                    }else{
+                        mTts.speak("Maaf suara Anda ga kedengeran mas, coba lagi aja",
+                                TextToSpeech.QUEUE_FLUSH, null);
+                    }
             }
         }
 
@@ -176,7 +208,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onInit(int status) {
         final Locale indonesiaLocale = new Locale("in", "ID");
