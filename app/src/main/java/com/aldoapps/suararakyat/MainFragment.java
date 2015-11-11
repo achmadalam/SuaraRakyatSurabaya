@@ -119,37 +119,41 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS
             );
-            String token = results.get(0);
 
-            Log.d("asdf", "kalimat: " + token);
-            if(token.contains("1") ||
-                    token.contains("satu") ||
-                    token.contains("pertama") ||
-                    token.contains("rasiyo") ||
-                    token.contains("lucy")){
+            for(int i = 0; i < results.size(); i++){
+                String token = results.get(i).toLowerCase();
 
-                mCurrentMenu = MENU_CALON_PERTAMA;
+                Log.d("asdf", "hasil: " + token);
+                if(token.contains("1") ||
+                        token.contains("satu") ||
+                        token.contains("pertama") ||
+                        token.contains("rasio") ||
+                        token.contains("lucy")){
 
-            }else if(
-                    token.contains("2") ||
-                            token.contains("dua") ||
-                            token.contains("kedua") ||
-                            token.contains("risma") ||
-                            token.contains("whisnu")){
+                    mCurrentMenu = MENU_CALON_PERTAMA;
+                    i = results.size() + 1;
+                }else if(
+                        token.contains("2") ||
+                                token.contains("dua") ||
+                                token.contains("kedua") ||
+                                token.contains("risma") ||
+                                token.contains("wisnu") ||
+                                token.contains("whisnu")){
 
-                mCurrentMenu = MENU_CALON_KEDUA;
+                    mCurrentMenu = MENU_CALON_KEDUA;
+                    i = results.size() + 1;
+                }else if(
+                        token.contains("3") ||
+                                token.contains("tiga") ||
+                                token.contains("jumlah") ||
+                                token.contains("informasi") ||
+                                token.contains("suara")){
 
-            }else if(
-                    token.contains("3") ||
-                            token.contains("tiga") ||
-                            token.contains("jumlah") ||
-                            token.contains("suara")){
-
-                mCurrentMenu = MENU_JUMLAH_SUARA;
-
-            }else{
-
-                mCurrentMenu = MENU_UNDEFINED;
+                    mCurrentMenu = MENU_JUMLAH_SUARA;
+                    i = results.size() + 1;
+                }else{
+                    mCurrentMenu = MENU_UNDEFINED;
+                }
             }
 
             Log.d("asdf", "mCurent Menu " + mCurrentMenu);
