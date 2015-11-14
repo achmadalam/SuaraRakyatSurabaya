@@ -11,6 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,7 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
-import com.parse.GetCallback;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -111,6 +113,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
         return new MainFragment();
     }
 
+
+
     public MainFragment(){}
 
     @Nullable
@@ -118,24 +122,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
-
-        mCandidateOneImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        mCandidateTwoImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    mTts.speak(getString(R.string.text),
-//                            TextToSpeech.QUEUE_FLUSH, null, SPEECH_CODE);
-//                }
-            }
-        });
 
         return view;
     }
@@ -151,7 +137,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     }
 
     private void listenForPortal(){
-        String menuPiwali = ("Informasi Pilwali Surabaya 2015, " +
+        String menuPiwali = ("Informasi Pilwali Surabaya, " +
                 "untuk informasi mengenai pilwali katakan satu, " +
                 "untuk memilih pasangan calon katakan dua");
 
@@ -223,8 +209,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 }
             }
 
-            Log.d("asdf", "portal " + mCurrentPortalMenu);
-
             if(mCurrentPortalMenu == MENU_PORTAL_SATU){
                 listenForInformation();
             }else if(mCurrentPortalMenu == MENU_PORTAL_DUA){
@@ -236,12 +220,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
         // If user wants to know candidate information
         if(requestCode == SPEECH_INFORMATION_CODE &&
                 resultCode == MainActivity.RESULT_OK){
-
-            /**
-             * this return a list of guessed words
-             * sorted in descending order
-             * the 0 index is the most accurate one
-             */
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS
             );
@@ -249,7 +227,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             for(int i = 0; i < results.size(); i++){
                 String token = results.get(i).toLowerCase();
 
-                Log.d("asdf", "hasil: " + token);
                 if(token.contains("1") ||
                         token.contains("satu") ||
                         token.contains("pertama") ||
@@ -282,6 +259,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 }
             }
 
+            Log.d("asdf", "current infor menu " + mCurrentInfoMenu);
+
             if(mCurrentInfoMenu == MENU_INFO_CALON_KEDUA
                     || mCurrentInfoMenu == MENU_INFO_CALON_PERTAMA){
                 /**
@@ -291,54 +270,39 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 getVisionMission();
             }else if(mCurrentInfoMenu == MENU_INFO_JUMLAH_SUARA){
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Vote");
-
-                query.getInBackground(ParseUser.getCurrentUser().getObjectId(),
-                        new GetCallback<ParseObject>() {
+                listenToPleaseWait();
+                query.findInBackground(new FindCallback<ParseObject>() {
                     @Override
-                    public void done(ParseObject object, ParseException e) {
-                        Log.d("asdf", "pilihannya adalah : " + object.get(VOTE_CHOICE_KEY));
-
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        listenForElectionResult(objects);
                     }
                 });
             }
         }
 
+        // FOR VOTING
         if(requestCode == SPEECH_VOTE_CODE
                 && resultCode == MainActivity.RESULT_OK){
-
-            /**
-             * this return a list of guessed words
-             * sorted in descending order
-             * the 0 index is the most accurate one
-             */
             List<String> results = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS
-            );
+                    RecognizerIntent.EXTRA_RESULTS);
 
             for(int i = 0; i < results.size(); i++) {
                 String token = results.get(i).toLowerCase();
 
-                Log.d("asdf", "hasil: " + token);
                 if (token.contains("1") ||
                         token.contains("satu") ||
                         token.contains("pertama") ||
                         token.contains("rasio") ||
                         token.contains("lucy")) {
 
+                    // Inspect user choice
                     ParseObject voteObject = new ParseObject("Vote");
                     voteObject.put(VOTE_KTP_KEY, ParseUser.getCurrentUser().get("no_ktp"));
                     voteObject.put(VOTE_CHOICE_KEY, VOTE_RESULT_RASIYO_LUCY);
                     voteObject.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                mTts.speak("Terimakasih telah memilih Rasiyo Lucy",
-                                        TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
-                            }else{
-                                mTts.speak("Terimakasih telah memilih Rasiyo Lucy",
-                                        TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
-                            }
-                            Log.d("asdf", "saved rasiyo lucy");
+                            listenToThankYouForVoting("Rasiyo Lucy");
                         }
                     });
 
@@ -357,24 +321,12 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                     voteObject.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                mTts.speak("Terimakasih telah memilih Risma Whisnu",
-                                        TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
-                            }else{
-                                mTts.speak("Terimakasih telah memilih Risma Whisnu",
-                                        TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
-                            }
-
-                            Log.d("asdf", "saved risma whisnu");
+                            listenToThankYouForVoting("Risma Whisnu");
                         }
                     });
-
-
                     i = results.size() + 1;
                 }
             }
-
-
         }
 
         /**
@@ -391,7 +343,50 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 startActivity(installTts);
             }
         }
+    }
 
+    private void listenToPleaseWait(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTts.speak("Harap tunggu sebentar..",
+                    TextToSpeech.QUEUE_FLUSH, null, null);
+        }else{
+            mTts.speak("Harap tunggu sebentar..",
+                    TextToSpeech.QUEUE_ADD, null);
+        }
+    }
+
+    private void listenToThankYouForVoting(String person) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTts.speak("Terimakasih telah memilih " + person,
+                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
+        }else{
+            mTts.speak("Terimakasih telah memilih " + person,
+                    TextToSpeech.QUEUE_FLUSH, mUMIDPortal);
+        }
+    }
+
+    private void listenForElectionResult(List<ParseObject> objects) {
+        int c1Amount = 0;
+        int c2Amount = 0;
+
+        for(ParseObject parseObject : objects){
+            if(parseObject.get(VOTE_CHOICE_KEY).equals(VOTE_RESULT_RASIYO_LUCY)){
+                ++c1Amount;
+            }else{
+                ++c2Amount;
+            }
+        }
+
+        String currentVotes = "Jumlah pemilih Rasiyo Lucy adalah " + c1Amount +
+                ". Dan jumlah pemilih Risma Whisnu adalah " + c2Amount;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTts.speak(currentVotes,
+                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
+        }else{
+            mTts.speak(currentVotes,
+                    TextToSpeech.QUEUE_ADD, mUMIDPortal);
+        }
     }
 
     private void respondInformationRequest() {
@@ -440,14 +435,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 ". Pasangan calon pertama memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mTts.speak(completeInformation,
-                            TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
-                }else{
-                    mTts.speak(completeInformation,
-                            TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
-                }
-
+                listenToCandidateInformation(completeInformation);
                 break;
             case MENU_INFO_CALON_KEDUA:
 
@@ -481,37 +469,24 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 ". Pasangan calon dua memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mTts.speak(completeInformation,
-                            TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
-                }else{
-                    mTts.speak(completeInformation,
-                            TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
-                }
+                listenToCandidateInformation(completeInformation);
+
                 break;
-            case MENU_INFO_JUMLAH_SUARA:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mTts.speak("anda memilih informasi jumlah suara",
-                            TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
-                }else{
-                    mTts.speak("anda memilih informasi jumlah suara",
-                            TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
-                }
-                break;
-            case MENU_UNDEFINED:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mTts.speak("Maaf suara Anda ga kedengeran mas, coba lagi aja",
-                            TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
-                }else{
-                    mTts.speak("Maaf suara Anda ga kedengeran mas, coba lagi aja",
-                            TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
-                }
+        }
+    }
+
+    private void listenToCandidateInformation(String completeInformation) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTts.speak(completeInformation,
+                    TextToSpeech.QUEUE_ADD, null, TTS_INFORMATION_CODE);
+        }else{
+            mTts.speak(completeInformation,
+                    TextToSpeech.QUEUE_ADD, mUMIDInformation);
         }
     }
 
     private void getVisionMission() {
-        mTts.speak("Harap tunggu sebentar..",
-                TextToSpeech.QUEUE_ADD, null);
+        listenToPleaseWait();
 
         JsonObjectRequest visionMissionRequest = new JsonObjectRequest(
                 Request.Method.GET,
