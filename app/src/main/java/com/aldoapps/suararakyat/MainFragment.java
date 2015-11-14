@@ -61,12 +61,11 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
     private static final int MENU_PORTAL_SATU = 11;
     private static final int MENU_PORTAL_DUA = 12;
+    private static final int MENU_PORTAL_TIGA = 13;
     private static final String VOTE_CHOICE_KEY = "vote_choice";
     private static final int VOTE_RESULT_RASIYO_LUCY = 0;
     private static final int VOTE_RESULT_RISMA_WHISNU = 1;
     private static final String VOTE_KTP_KEY = "no_ktp";
-
-    // text to speech area
 
     /**
      * turns out this hashmap is container for utterance id
@@ -136,16 +135,18 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     }
 
     private void listenForPortal(){
-        String menuPiwali = ("Suara Rakyat Surabaya, " +
+        String menuPiwali = ("Selamat datang di Suara Rakyat Surabaya, " +
                 "untuk informasi mengenai pilwali katakan satu, " +
-                "untuk memilih pasangan calon katakan dua");
+                "untuk memilih pasangan calon katakan dua, " +
+                "untuk keluar aplikasi katakan tiga"
+        );
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_ADD, null, TTS_PORTAL_CODE);
+                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
         }else{
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_ADD, mUMIDPortal);
+                    TextToSpeech.QUEUE_FLUSH, mUMIDPortal);
         }
     }
 
@@ -186,6 +187,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 if(token.contains("1") ||
                         token.contains("satu") ||
                         token.contains("pertama") ||
+                        token.contains("kesatu") ||
                         token.contains("informasi") ||
                         token.contains("info")){
 
@@ -203,6 +205,17 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
                     mCurrentPortalMenu = MENU_PORTAL_DUA;
                     i = results.size() + 1;
+                }else if(
+                        token.contains("3") ||
+                                token.contains("tiga") ||
+                                token.contains("ketiga") ||
+                                token.contains("keluar") ||
+                                token.contains("exit") ||
+                                token.contains("selesai") ||
+                                token.contains("three")){
+
+                    mCurrentPortalMenu = MENU_PORTAL_TIGA;
+                    i = results.size() + 1;
                 }else{
                     mCurrentPortalMenu = MENU_UNDEFINED;
                 }
@@ -212,6 +225,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 listenForInformation();
             }else if(mCurrentPortalMenu == MENU_PORTAL_DUA){
                 listenForVote();
+            }else if(mCurrentPortalMenu == MENU_PORTAL_TIGA){
+                listenForExit();
             }
 
         }
@@ -367,6 +382,21 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 installTts.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installTts);
             }
+        }
+    }
+
+    private void listenForExit() {
+        String namaPengguna = ParseUser.getCurrentUser().getUsername();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTts.speak("Terima kasih " + namaPengguna +
+                            ", atas partisipasinya dalam pemilihan walikota Surabaya 2015 " +
+                            "dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali",
+                    TextToSpeech.QUEUE_ADD, null, null);
+        }else{
+            mTts.speak("Terima kasih " + namaPengguna +
+                            ", atas partisipasinya dalam pemilihan walikota Surabaya 2015 " +
+                            "dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali",
+                    TextToSpeech.QUEUE_ADD, null);
         }
     }
 
