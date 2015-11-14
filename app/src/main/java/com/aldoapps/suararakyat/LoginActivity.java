@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (e != null) {
                             doRegister();
                             Toast.makeText(LoginActivity.this,
-                                    "Terjadi kesalahan, silahkan coba kembali",
+                                    "Mendaftarkan pengguna..",
                                     Toast.LENGTH_SHORT).show();
                             Log.d("asdf", "e: " + e.getMessage());
                         } else {
@@ -90,7 +90,12 @@ public class LoginActivity extends AppCompatActivity {
         user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
-                doLogin();
+                if(e != null){
+                    doLogin();
+                }else{
+                    Log.d("asdf", "error");
+                }
+
             }
         });
     }
