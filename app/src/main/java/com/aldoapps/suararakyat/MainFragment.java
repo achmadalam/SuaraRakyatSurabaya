@@ -11,8 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -58,6 +56,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     private static final int MENU_INFO_CALON_PERTAMA = 0;
     private static final int MENU_INFO_CALON_KEDUA = 1;
     private static final int MENU_INFO_JUMLAH_SUARA = 2;
+    private static final int MENU_INFO_KEMBALI = 3;
     private static final int MENU_UNDEFINED = 99;
 
     private static final int MENU_PORTAL_SATU = 11;
@@ -129,10 +128,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     private void listenForInformation(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak(getString(R.string.text),
-                    TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
+                    TextToSpeech.QUEUE_ADD, null, TTS_INFORMATION_CODE);
         }else{
             mTts.speak(getString(R.string.text),
-                    TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
+                    TextToSpeech.QUEUE_ADD, mUMIDInformation);
         }
     }
 
@@ -143,10 +142,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
+                    TextToSpeech.QUEUE_ADD, null, TTS_PORTAL_CODE);
         }else{
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_FLUSH, mUMIDPortal);
+                    TextToSpeech.QUEUE_ADD, mUMIDPortal);
         }
     }
 
@@ -154,11 +153,11 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak("Paslon mana yang ingin Anda pilih? " +
                             "Rasiyo Lucy atau Risma Whisnu?",
-                    TextToSpeech.QUEUE_FLUSH, null, TTS_VOTE_CODE);
+                    TextToSpeech.QUEUE_ADD, null, TTS_VOTE_CODE);
         }else{
             mTts.speak("Paslon mana yang ingin Anda pilih? " +
                             "Rasiyo Lucy atau Risma Whisnu?",
-                    TextToSpeech.QUEUE_FLUSH, mUMIDVote);
+                    TextToSpeech.QUEUE_ADD, mUMIDVote);
         }
     }
 
@@ -254,7 +253,16 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
                     mCurrentInfoMenu = MENU_INFO_JUMLAH_SUARA;
                     i = results.size() + 1;
-                }else{
+                }else if(
+                        token.contains("4") ||
+                                token.contains("empat") ||
+                                token.contains("kembali") ||
+                                token.contains("voting") ||
+                                token.contains("back")){
+
+                    mCurrentInfoMenu = MENU_INFO_KEMBALI;
+                    i = results.size() + 1;
+                } else{
                     mCurrentInfoMenu = MENU_UNDEFINED;
                 }
             }
@@ -270,13 +278,15 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 getVisionMission();
             }else if(mCurrentInfoMenu == MENU_INFO_JUMLAH_SUARA){
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Vote");
-                listenToPleaseWait();
+                listenForPleaseWait();
                 query.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
                         listenForElectionResult(objects);
                     }
                 });
+            }else if(mCurrentInfoMenu == MENU_INFO_KEMBALI){
+                listenForPortal();
             }
         }
 
@@ -295,14 +305,24 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                         token.contains("rasio") ||
                         token.contains("lucy")) {
 
-                    // Inspect user choice
-                    ParseObject voteObject = new ParseObject("Vote");
-                    voteObject.put(VOTE_KTP_KEY, ParseUser.getCurrentUser().get("no_ktp"));
-                    voteObject.put(VOTE_CHOICE_KEY, VOTE_RESULT_RASIYO_LUCY);
-                    voteObject.saveInBackground(new SaveCallback() {
+                    // Inspect user choice first, if already exist. Update
+                    ParseQuery query = ParseQuery.getQuery("Vote");
+                    query.whereEqualTo("no_ktp",
+                            ParseUser.getCurrentUser().get("no_ktp"));
+                    listenForPleaseWait();
+                    query.findInBackground(new FindCallback<ParseObject>(){
+
                         @Override
-                        public void done(ParseException e) {
-                            listenToThankYouForVoting("Rasiyo Lucy");
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            ParseObject parseObject = objects.get(0);
+                            if (parseObject == null) {
+                                Log.d("asdf", "done object null");
+
+                                voteFor(VOTE_RESULT_RASIYO_LUCY);
+                            } else {
+                                Log.d("asdf", "done object NOT null");
+                                updateVoteFor(parseObject, VOTE_RESULT_RASIYO_LUCY);
+                            }
                         }
                     });
 
@@ -315,15 +335,27 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 token.contains("wisnu") ||
                                 token.contains("whisnu")) {
 
-                    ParseObject voteObject = new ParseObject("Vote");
-                    voteObject.put(VOTE_KTP_KEY, ParseUser.getCurrentUser().get("no_ktp"));
-                    voteObject.put(VOTE_CHOICE_KEY, VOTE_RESULT_RISMA_WHISNU);
-                    voteObject.saveInBackground(new SaveCallback() {
+                    // Inspect user choice first, if already exist. Update
+                    ParseQuery query = ParseQuery.getQuery("Vote");
+                    query.whereEqualTo("no_ktp",
+                            ParseUser.getCurrentUser().get("no_ktp"));
+                    listenForPleaseWait();
+                    query.findInBackground(new FindCallback<ParseObject>(){
+
                         @Override
-                        public void done(ParseException e) {
-                            listenToThankYouForVoting("Risma Whisnu");
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            ParseObject parseObject = objects.get(0);
+                            if (parseObject == null) {
+                                Log.d("asdf", "done object null");
+
+                                voteFor(VOTE_RESULT_RISMA_WHISNU);
+                            } else {
+                                Log.d("asdf", "done object NOT null");
+                                updateVoteFor(parseObject, VOTE_RESULT_RISMA_WHISNU);
+                            }
                         }
                     });
+
                     i = results.size() + 1;
                 }
             }
@@ -345,24 +377,56 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
         }
     }
 
-    private void listenToPleaseWait(){
+    private void updateVoteFor(ParseObject parseObject, final int updateCandidate) {
+        parseObject.put(VOTE_CHOICE_KEY, updateCandidate);
+        parseObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(updateCandidate == VOTE_RESULT_RASIYO_LUCY){
+                    listenForThankYouForVoting("Rasiyo Lucy");
+                }else {
+                    listenForThankYouForVoting("Risma Whisnu");
+                }
+            }
+        });
+    }
+
+    private void voteFor(final int candidate) {
+        ParseObject voteObject = new ParseObject("Vote");
+        voteObject.put(VOTE_KTP_KEY, ParseUser.getCurrentUser().get("no_ktp"));
+        voteObject.put(VOTE_CHOICE_KEY, candidate);
+        voteObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(candidate == VOTE_RESULT_RASIYO_LUCY){
+                    listenForThankYouForVoting("Rasiyo Lucy");
+                }else {
+                    listenForThankYouForVoting("Risma Whisnu");
+                }
+            }
+        });
+    }
+
+    private void listenForPleaseWait(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak("Harap tunggu sebentar..",
-                    TextToSpeech.QUEUE_FLUSH, null, null);
+                    TextToSpeech.QUEUE_ADD, null, null);
         }else{
             mTts.speak("Harap tunggu sebentar..",
                     TextToSpeech.QUEUE_ADD, null);
         }
     }
 
-    private void listenToThankYouForVoting(String person) {
+    private void listenForThankYouForVoting(String person) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak("Terimakasih telah memilih " + person,
-                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
+            mTts.speak("Terima kasih telah memilih " + person,
+                    TextToSpeech.QUEUE_ADD, null, null);
         }else{
-            mTts.speak("Terimakasih telah memilih " + person,
-                    TextToSpeech.QUEUE_FLUSH, mUMIDPortal);
+            mTts.speak("Terima kasih telah memilih " + person,
+                    TextToSpeech.QUEUE_ADD, null);
         }
+        // after speaking thank you, back to portal
+        listenForPortal();
     }
 
     private void listenForElectionResult(List<ParseObject> objects) {
@@ -382,11 +446,13 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak(currentVotes,
-                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
+                    TextToSpeech.QUEUE_ADD, null, null);
         }else{
             mTts.speak(currentVotes,
-                    TextToSpeech.QUEUE_ADD, mUMIDPortal);
+                    TextToSpeech.QUEUE_ADD, null);
         }
+
+        listenForInformation();
     }
 
     private void respondInformationRequest() {
@@ -435,7 +501,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 ". Pasangan calon pertama memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
 
-                listenToCandidateInformation(completeInformation);
+                listenForCandidateInformation("Kandidat satu");
                 break;
             case MENU_INFO_CALON_KEDUA:
 
@@ -469,24 +535,26 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 ". Pasangan calon dua memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
 
-                listenToCandidateInformation(completeInformation);
+                listenForCandidateInformation("Kandidat Dua");
 
                 break;
         }
     }
 
-    private void listenToCandidateInformation(String completeInformation) {
+    private void listenForCandidateInformation(String completeInformation) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak(completeInformation,
-                    TextToSpeech.QUEUE_ADD, null, TTS_INFORMATION_CODE);
+                    TextToSpeech.QUEUE_ADD, null, null);
         }else{
             mTts.speak(completeInformation,
-                    TextToSpeech.QUEUE_ADD, mUMIDInformation);
+                    TextToSpeech.QUEUE_ADD, null);
         }
+
+        listenForInformation();
     }
 
     private void getVisionMission() {
-        listenToPleaseWait();
+        listenForPleaseWait();
 
         JsonObjectRequest visionMissionRequest = new JsonObjectRequest(
                 Request.Method.GET,
