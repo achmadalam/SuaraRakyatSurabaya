@@ -65,14 +65,14 @@ public class LoginActivity extends AppCompatActivity {
                 new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
-                        if (e != null) {
+                        progressDialog.dismiss();
+                        if (user == null) {
                             doRegister();
                             Toast.makeText(LoginActivity.this,
                                     "Mendaftarkan pengguna..",
                                     Toast.LENGTH_SHORT).show();
                             Log.d("asdf", "e: " + e.getMessage());
                         } else {
-                            progressDialog.dismiss();
                             Intent intent = new Intent(LoginActivity.this, DispatchActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
                                     | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -87,13 +87,14 @@ public class LoginActivity extends AppCompatActivity {
         ParseUser user = new ParseUser();
         user.setUsername(mNama.getText().toString());
         user.setPassword(mNoKtp.getText().toString());
+        user.put("no_ktp", mNoKtp.getText().toString());
         user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
-                if(e != null){
+                if(e == null){
                     doLogin();
                 }else{
-                    Log.d("asdf", "error");
+                    Log.d("asdf", "error: " + e.getMessage());
                 }
 
             }

@@ -23,6 +23,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +60,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
     private static final int MENU_PORTAL_SATU = 11;
     private static final int MENU_PORTAL_DUA = 12;
+    private static final String VOTE_CHOICE_KEY = "vote_choice";
+    private static final int VOTE_RESULT_RASIYO_LUCY = 0;
+    private static final int VOTE_RESULT_RISMA_WHISNU = 1;
+    private static final String VOTE_KTP_KEY = "no_ktp";
 
     // text to speech area
 
@@ -156,10 +166,12 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
     private void listenForVote(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak(getString(R.string.text),
+            mTts.speak("Paslon mana yang ingin Anda pilih? " +
+                            "Rasiyo Lucy atau Risma Whisnu?",
                     TextToSpeech.QUEUE_FLUSH, null, TTS_VOTE_CODE);
         }else{
-            mTts.speak(getString(R.string.text),
+            mTts.speak("Paslon mana yang ingin Anda pilih? " +
+                            "Rasiyo Lucy atau Risma Whisnu?",
                     TextToSpeech.QUEUE_FLUSH, mUMIDVote);
         }
     }
@@ -210,6 +222,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                     mCurrentPortalMenu = MENU_UNDEFINED;
                 }
             }
+
+            Log.d("asdf", "portal " + mCurrentPortalMenu);
 
             if(mCurrentPortalMenu == MENU_PORTAL_SATU){
                 listenForInformation();
@@ -275,7 +289,92 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                  * subsequently to preserve integrity
                  */
                 getVisionMission();
+            }else if(mCurrentInfoMenu == MENU_INFO_JUMLAH_SUARA){
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("Vote");
+
+                query.getInBackground(ParseUser.getCurrentUser().getObjectId(),
+                        new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                        Log.d("asdf", "pilihannya adalah : " + object.get(VOTE_CHOICE_KEY));
+
+                    }
+                });
             }
+        }
+
+        if(requestCode == SPEECH_VOTE_CODE
+                && resultCode == MainActivity.RESULT_OK){
+
+            /**
+             * this return a list of guessed words
+             * sorted in descending order
+             * the 0 index is the most accurate one
+             */
+            List<String> results = data.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS
+            );
+
+            for(int i = 0; i < results.size(); i++) {
+                String token = results.get(i).toLowerCase();
+
+                Log.d("asdf", "hasil: " + token);
+                if (token.contains("1") ||
+                        token.contains("satu") ||
+                        token.contains("pertama") ||
+                        token.contains("rasio") ||
+                        token.contains("lucy")) {
+
+                    ParseObject voteObject = new ParseObject("Vote");
+                    voteObject.put(VOTE_KTP_KEY, ParseUser.getCurrentUser().get("no_ktp"));
+                    voteObject.put(VOTE_CHOICE_KEY, VOTE_RESULT_RASIYO_LUCY);
+                    voteObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                mTts.speak("Terimakasih telah memilih Rasiyo Lucy",
+                                        TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
+                            }else{
+                                mTts.speak("Terimakasih telah memilih Rasiyo Lucy",
+                                        TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
+                            }
+                            Log.d("asdf", "saved rasiyo lucy");
+                        }
+                    });
+
+                    i = results.size() + 1;
+                } else if (
+                        token.contains("2") ||
+                                token.contains("dua") ||
+                                token.contains("kedua") ||
+                                token.contains("risma") ||
+                                token.contains("wisnu") ||
+                                token.contains("whisnu")) {
+
+                    ParseObject voteObject = new ParseObject("Vote");
+                    voteObject.put(VOTE_KTP_KEY, ParseUser.getCurrentUser().get("no_ktp"));
+                    voteObject.put(VOTE_CHOICE_KEY, VOTE_RESULT_RISMA_WHISNU);
+                    voteObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                mTts.speak("Terimakasih telah memilih Risma Whisnu",
+                                        TextToSpeech.QUEUE_FLUSH, null, TTS_INFORMATION_CODE);
+                            }else{
+                                mTts.speak("Terimakasih telah memilih Risma Whisnu",
+                                        TextToSpeech.QUEUE_FLUSH, mUMIDInformation);
+                            }
+
+                            Log.d("asdf", "saved risma whisnu");
+                        }
+                    });
+
+
+                    i = results.size() + 1;
+                }
+            }
+
+
         }
 
         /**
@@ -375,7 +474,9 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 ". Sedangkan " + p2name +
                                 " lahir di " + p2pob +
                                 " , pada tahun " + p2dob +
-                                " , dan memiliki pekerjaan sebagai " + p2job +
+                                // sadly Lucy doesn't mention her job in API.
+                                // I wonder what her job is..
+                                // " , dan memiliki pekerjaan sebagai " + p2job +
                                 ". Pasangan calon ini berasal dari partai " + candidateParty +
                                 ". Pasangan calon dua memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
