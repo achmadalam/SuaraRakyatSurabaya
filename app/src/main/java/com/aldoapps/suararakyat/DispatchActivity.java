@@ -21,8 +21,12 @@ public class DispatchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if(ParseUser.getCurrentUser() != null){
+            Intent intent1 = new Intent(this, MainActivity.class);
+            intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(new Intent(this, MainActivity.class));
         }else{
+            Intent intent2 = new Intent(this, LoginActivity.class);
+            intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(new Intent(this, LoginActivity.class));
         }
     }

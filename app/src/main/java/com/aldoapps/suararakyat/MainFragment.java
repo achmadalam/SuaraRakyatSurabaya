@@ -136,7 +136,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     }
 
     private void listenForPortal(){
-        String menuPiwali = ("Informasi Pilwali Surabaya, " +
+        String menuPiwali = ("Suara Rakyat Surabaya, " +
                 "untuk informasi mengenai pilwali katakan satu, " +
                 "untuk memilih pasangan calon katakan dua");
 
@@ -314,15 +314,12 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseObject parseObject = objects.get(0);
-                            if (parseObject == null) {
-                                Log.d("asdf", "done object null");
-
+                            if(objects.size() > 0){
+                                updateVoteFor(objects.get(0), VOTE_RESULT_RASIYO_LUCY);
+                            }else{
                                 voteFor(VOTE_RESULT_RASIYO_LUCY);
-                            } else {
-                                Log.d("asdf", "done object NOT null");
-                                updateVoteFor(parseObject, VOTE_RESULT_RASIYO_LUCY);
                             }
+
                         }
                     });
 
@@ -344,14 +341,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
-                            ParseObject parseObject = objects.get(0);
-                            if (parseObject == null) {
-                                Log.d("asdf", "done object null");
-
+                            if(objects.size() > 0){
+                                updateVoteFor(objects.get(0), VOTE_RESULT_RISMA_WHISNU);
+                            }else{
                                 voteFor(VOTE_RESULT_RISMA_WHISNU);
-                            } else {
-                                Log.d("asdf", "done object NOT null");
-                                updateVoteFor(parseObject, VOTE_RESULT_RISMA_WHISNU);
                             }
                         }
                     });
@@ -472,8 +465,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
         switch (mCurrentInfoMenu){
             case MENU_INFO_CALON_PERTAMA:
-                p1name = mCandidateRasioLucy.getParticipants().get(0).getName();
-                p2name = mCandidateRasioLucy.getParticipants().get(1).getName();
+//                p1name = mCandidateRasioLucy.getParticipants().get(0).getName();
+//                p2name = mCandidateRasioLucy.getParticipants().get(1).getName();
+                p1name = "DRS. Rasiyo, MSI";
+                p2name = "DRA. Lucy Kurniasari";
                 p1dob = mCandidateRasioLucy.getParticipants().get(0).getDob().substring(0, 4);
                 p2dob = mCandidateRasioLucy.getParticipants().get(0).getDob().substring(0, 4);
                 p1pob = mCandidateRasioLucy.getParticipants().get(0).getPob();
@@ -488,7 +483,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 completeInformation =
                         "Pasangan calon pertama adalah " + p1name +
                                 " sebagai calon walikota dan " + p2name +
-                                " sebagai calon walikota. " + p1name +
+                                " sebagai calon wakil walikota. " + p1name +
                                 " lahir di " + p1pob +
                                 " , pada tahun " + p1dob +
                                 " , dan memiliki pekerjaan sebagai " + p1job +
@@ -505,7 +500,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 listenForCandidateInformation(completeInformation);
                 break;
             case MENU_INFO_CALON_KEDUA:
-
                 p1name = mCandidateRismaWhisnu.getParticipants().get(0).getName();
                 p2name = mCandidateRismaWhisnu.getParticipants().get(1).getName();
                 p1dob = mCandidateRismaWhisnu.getParticipants().get(0).getDob().substring(0, 4);
@@ -522,7 +516,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 completeInformation =
                         "Pasangan calon kedua adalah " + p1name +
                                 " sebagai calon walikota dan " + p2name +
-                                " sebagai calon walikota. " + p1name +
+                                " sebagai calon wakil walikota. " + p1name +
                                 " lahir di " + p1pob +
                                 " , pada tahun " + p1dob +
                                 " , dan memiliki pekerjaan sebagai " + p1job +
