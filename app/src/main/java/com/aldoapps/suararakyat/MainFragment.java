@@ -88,8 +88,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     // yes, main = portal. I'm THAT inconsistent
 
     // Information Result
-    private VisionMission mVisionMissionOne, mVisionMissionTwo;
-    private Candidate mCandidateOne, mCandidateTwo;
+    private VisionMission mVisionMissionRasiyoLucy, mVisionMissionRismaWhisnu;
+    private Candidate mCandidateRasioLucy, mCandidateRismaWhisnu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -472,54 +472,21 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
         switch (mCurrentInfoMenu){
             case MENU_INFO_CALON_PERTAMA:
-                p1name = mCandidateOne.getParticipants().get(0).getName();
-                p2name = mCandidateOne.getParticipants().get(1).getName();
-                p1dob = mCandidateOne.getParticipants().get(0).getDob().substring(0, 4);
-                p2dob = mCandidateOne.getParticipants().get(0).getDob().substring(0, 4);
-                p1pob = mCandidateOne.getParticipants().get(0).getPob();
-                p2pob = mCandidateOne.getParticipants().get(1).getPob();
-                p1job = mCandidateOne.getParticipants().get(0).getWork();
-                p2job = mCandidateOne.getParticipants().get(1).getWork();
+                p1name = mCandidateRasioLucy.getParticipants().get(0).getName();
+                p2name = mCandidateRasioLucy.getParticipants().get(1).getName();
+                p1dob = mCandidateRasioLucy.getParticipants().get(0).getDob().substring(0, 4);
+                p2dob = mCandidateRasioLucy.getParticipants().get(0).getDob().substring(0, 4);
+                p1pob = mCandidateRasioLucy.getParticipants().get(0).getPob();
+                p2pob = mCandidateRasioLucy.getParticipants().get(1).getPob();
+                p1job = mCandidateRasioLucy.getParticipants().get(0).getWork();
+                p2job = mCandidateRasioLucy.getParticipants().get(1).getWork();
 
-                candidateParty = mCandidateOne.getEndorsement();
-                candidateVision = mVisionMissionOne.getVision();
-                candidateMission = mVisionMissionOne.getMision();
+                candidateParty = mCandidateRasioLucy.getEndorsement();
+                candidateVision = mVisionMissionRasiyoLucy.getVision();
+                candidateMission = mVisionMissionRasiyoLucy.getMision();
 
                 completeInformation =
                         "Pasangan calon pertama adalah " + p1name +
-                                " sebagai calon walikota dan " + p2name +
-                                " sebagai calon walikota. " + p1name +
-                                " lahir di " + p1pob +
-                                " , pada tahun " + p1dob +
-                                " , dan memiliki pekerjaan sebagai " + p1job +
-                                " dan memiliki pekerjaan sebagai " + p1job +
-                                ". Sedangkan " + p2name +
-                                " lahir di " + p2pob +
-                                " , pada tahun " + p2dob +
-                                " , dan memiliki pekerjaan sebagai " + p2job +
-                                ". Pasangan calon ini berasal dari partai " + candidateParty +
-                                ". Pasangan calon pertama memiliki Visi " + candidateVision +
-                                " . Dan memiliki misi " + candidateMission;
-
-                listenForCandidateInformation(completeInformation);
-                break;
-            case MENU_INFO_CALON_KEDUA:
-
-                p1name = mCandidateTwo.getParticipants().get(0).getName();
-                p2name = mCandidateTwo.getParticipants().get(1).getName();
-                p1dob = mCandidateTwo.getParticipants().get(0).getDob().substring(0, 4);
-                p2dob = mCandidateTwo.getParticipants().get(0).getDob().substring(0, 4);
-                p1pob = mCandidateTwo.getParticipants().get(0).getPob();
-                p2pob = mCandidateTwo.getParticipants().get(1).getPob();
-                p1job = mCandidateTwo.getParticipants().get(0).getWork();
-                p2job = mCandidateTwo.getParticipants().get(1).getWork();
-
-                candidateParty = mCandidateTwo.getEndorsement();
-                candidateVision = mVisionMissionTwo.getVision();
-                candidateMission = mVisionMissionTwo.getMision();
-
-                completeInformation =
-                        "Pasangan calon kedua adalah " + p1name +
                                 " sebagai calon walikota dan " + p2name +
                                 " sebagai calon walikota. " + p1name +
                                 " lahir di " + p1pob +
@@ -531,6 +498,38 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 // sadly Lucy doesn't mention her job in API.
                                 // I wonder what her job is..
                                 // " , dan memiliki pekerjaan sebagai " + p2job +
+                                ". Pasangan calon ini berasal dari partai " + candidateParty +
+                                ". Pasangan calon pertama memiliki Visi " + candidateVision +
+                                " . Dan memiliki misi " + candidateMission;
+
+                listenForCandidateInformation(completeInformation);
+                break;
+            case MENU_INFO_CALON_KEDUA:
+
+                p1name = mCandidateRismaWhisnu.getParticipants().get(0).getName();
+                p2name = mCandidateRismaWhisnu.getParticipants().get(1).getName();
+                p1dob = mCandidateRismaWhisnu.getParticipants().get(0).getDob().substring(0, 4);
+                p2dob = mCandidateRismaWhisnu.getParticipants().get(0).getDob().substring(0, 4);
+                p1pob = mCandidateRismaWhisnu.getParticipants().get(0).getPob();
+                p2pob = mCandidateRismaWhisnu.getParticipants().get(1).getPob();
+                p1job = mCandidateRismaWhisnu.getParticipants().get(0).getWork();
+                p2job = mCandidateRismaWhisnu.getParticipants().get(1).getWork();
+
+                candidateParty = mCandidateRismaWhisnu.getEndorsement();
+                candidateVision = mVisionMissionRismaWhisnu.getVision();
+                candidateMission = mVisionMissionRismaWhisnu.getMision();
+
+                completeInformation =
+                        "Pasangan calon kedua adalah " + p1name +
+                                " sebagai calon walikota dan " + p2name +
+                                " sebagai calon walikota. " + p1name +
+                                " lahir di " + p1pob +
+                                " , pada tahun " + p1dob +
+                                " , dan memiliki pekerjaan sebagai " + p1job +
+                                ". Sedangkan " + p2name +
+                                " lahir di " + p2pob +
+                                " , pada tahun " + p2dob +
+                                 " , dan memiliki pekerjaan sebagai " + p2job +
                                 ". Pasangan calon ini berasal dari partai " + candidateParty +
                                 ". Pasangan calon dua memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
@@ -569,10 +568,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                     .getJSONArray("vision_missions");
 
                             Gson gson = new Gson();
-                            mVisionMissionOne = gson
+                            mVisionMissionRasiyoLucy = gson
                                     .fromJson(visionMissionList.get(0).toString(),
                                             VisionMission.class);
-                            mVisionMissionTwo = gson
+                            mVisionMissionRismaWhisnu = gson
                                     .fromJson(visionMissionList.get(1).toString(),
                                             VisionMission.class);
 
@@ -604,12 +603,12 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                             JSONArray candidateList = response.getJSONObject("data")
                                     .getJSONObject("results")
                                     .getJSONArray("candidates");
-                            JSONObject candidateOneJSON = candidateList.getJSONObject(0);
-                            JSONObject candidateTwoJSON = candidateList.getJSONObject(1);
+                            JSONObject candidateOneJSON = candidateList.getJSONObject(1);
+                            JSONObject candidateTwoJSON = candidateList.getJSONObject(0);
 
                             Gson gson = new Gson();
-                            mCandidateOne = gson.fromJson(candidateOneJSON.toString(), Candidate.class);
-                            mCandidateTwo = gson.fromJson(candidateTwoJSON.toString(), Candidate.class);
+                            mCandidateRasioLucy = gson.fromJson(candidateOneJSON.toString(), Candidate.class);
+                            mCandidateRismaWhisnu = gson.fromJson(candidateTwoJSON.toString(), Candidate.class);
 
                             respondInformationRequest();
                         } catch (JSONException e) {
