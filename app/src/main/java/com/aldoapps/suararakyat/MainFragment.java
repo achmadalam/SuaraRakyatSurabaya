@@ -143,10 +143,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
+                    TextToSpeech.QUEUE_ADD, null, TTS_PORTAL_CODE);
         }else{
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_FLUSH, mUMIDPortal);
+                    TextToSpeech.QUEUE_ADD, mUMIDPortal);
         }
     }
 
@@ -320,6 +320,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                         token.contains("rasio") ||
                         token.contains("lucy")) {
 
+                    Log.d("asdf", "lucy dipilih");
+
                     // Inspect user choice first, if already exist. Update
                     ParseQuery query = ParseQuery.getQuery("Vote");
                     query.whereEqualTo("no_ktp",
@@ -330,8 +332,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if(objects.size() > 0){
+                                Log.d("asdf", "object besar");
                                 updateVoteFor(objects.get(0), VOTE_RESULT_RASIYO_LUCY);
                             }else{
+                                Log.d("asdf", "object kecil");
                                 voteFor(VOTE_RESULT_RASIYO_LUCY);
                             }
 
@@ -346,6 +350,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 token.contains("risma") ||
                                 token.contains("wisnu") ||
                                 token.contains("whisnu")) {
+                    Log.d("asdf", "risma dipilih");
 
                     // Inspect user choice first, if already exist. Update
                     ParseQuery query = ParseQuery.getQuery("Vote");
@@ -406,8 +411,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             @Override
             public void done(ParseException e) {
                 if(updateCandidate == VOTE_RESULT_RASIYO_LUCY){
+                    Log.d("asdf", "UPDATE FOR LUCY");
                     listenForThankYouForVoting("Rasiyo Lucy");
                 }else {
+                    Log.d("asdf", "UPDATE FOR RISMA");
                     listenForThankYouForVoting("Risma Whisnu");
                 }
             }
@@ -422,8 +429,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             @Override
             public void done(ParseException e) {
                 if(candidate == VOTE_RESULT_RASIYO_LUCY){
+                    Log.d("asdf", "VOTE FOR LUCY");
                     listenForThankYouForVoting("Rasiyo Lucy");
                 }else {
+                    Log.d("asdf", "vote FOR risma");
                     listenForThankYouForVoting("Risma Whisnu");
                 }
             }
