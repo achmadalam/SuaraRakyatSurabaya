@@ -501,7 +501,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 ". Pasangan calon pertama memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
 
-                listenForCandidateInformation("Kandidat satu");
+                listenForCandidateInformation(completeInformation);
                 break;
             case MENU_INFO_CALON_KEDUA:
 
@@ -535,7 +535,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                                 ". Pasangan calon dua memiliki Visi " + candidateVision +
                                 " . Dan memiliki misi " + candidateMission;
 
-                listenForCandidateInformation("Kandidat Dua");
+                listenForCandidateInformation(completeInformation);
 
                 break;
         }
