@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Suara Rakyat Surabaya</string>
+    <string name="action_map">Peta</string>
+    <string name="action_settings">Pengaturan</string>
+    <string name="enter_no_ktp">Masukkan Nama dan No. KTP sesuai yang tertera dalam KTP</string>
+    <string name="locale"></string>
+    <string name="title_activity_maps">Peta</string>
+    <string name="vote_manual">Vote manual</string>
+    <string name="vote_suara">Vote suara</string>
+    <string name="voice_choose_your_candidate">Silahkan katakan pilihan Anda</string>
+</resources>

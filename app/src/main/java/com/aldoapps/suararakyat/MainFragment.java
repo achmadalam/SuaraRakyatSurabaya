@@ -1,5 +1,8 @@
 package com.aldoapps.suararakyat;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 import com.parse.FindCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -72,11 +76,13 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
      * so we create different utterancemap for different tts
      */
     private HashMap<String, String> mUMIDInformation = new HashMap<>();
+    private HashMap<String, String> mUMIDExit = new HashMap<>();
     private HashMap<String, String> mUMIDPortal = new HashMap<>();
     private HashMap<String, String> mUMIDVote = new HashMap<>();
     private TextToSpeech mTts;
     private static final String TTS_INFORMATION_CODE = "information_code";
     private static final String TTS_VOTE_CODE = "vote_code";
+    private static final String TTS_EXIT = "exit_code";
     private static final String TTS_PORTAL_CODE = "portal_code";
 
     @Bind(R.id.fabulous_button) FloatingActionButton mVoiceBtn;
@@ -143,10 +149,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_ADD, null, TTS_PORTAL_CODE);
+                    TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
         }else{
             mTts.speak(menuPiwali,
-                    TextToSpeech.QUEUE_ADD, mUMIDPortal);
+                    TextToSpeech.QUEUE_FLUSH, mUMIDPortal);
         }
     }
 
@@ -381,7 +387,9 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             // Success! File has already been installed
             if(resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS){
                 mTts = new TextToSpeech(getActivity(), this);
+                Log.d("asdf", "tts_data_check_code success");
             }else{
+                Log.d("asdf", "tts_data_check_code failed");
                 // fail, attempt to install tts
                 Intent installTts = new Intent();
                 installTts.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
@@ -396,12 +404,12 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             mTts.speak("Terima kasih " + namaPengguna +
                             ", atas partisipasinya dalam pemilihan walikota Surabaya 2015 " +
                             "dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali",
-                    TextToSpeech.QUEUE_ADD, null, null);
+                    TextToSpeech.QUEUE_ADD, null, TTS_EXIT);
         }else{
             mTts.speak("Terima kasih " + namaPengguna +
                             ", atas partisipasinya dalam pemilihan walikota Surabaya 2015 " +
                             "dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali",
-                    TextToSpeech.QUEUE_ADD, null);
+                    TextToSpeech.QUEUE_ADD, mUMIDExit);
         }
     }
 
@@ -703,18 +711,28 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
              * Find existing Indonesian Language in System
              * If doesn't exist, back to default phone :(
              * not that we also can use this method too:
-             * if(mTts.isLanguageAvailable(indonesiaLocale)
-             * == TextToSpeech.LANG_COUNTRY_AVAILABLE)
+             * final Locale[] availableLocales=Locale.getAvailableLocales();
+             for(final Locale locale : availableLocales){
+             if(locale.getCountry().equalsIgnoreCase(indonesiaLocale.getCountry())
+             && locale.getLanguage().equalsIgnoreCase(indonesiaLocale.getLanguage())) {
              */
-            final Locale[] availableLocales=Locale.getAvailableLocales();
-            for(final Locale locale : availableLocales){
-                if(locale.getCountry().equalsIgnoreCase(indonesiaLocale.getCountry())
-                        && locale.getLanguage().equalsIgnoreCase(indonesiaLocale.getLanguage())) {
-                    mTts.setLanguage(indonesiaLocale);
-                    mUMIDInformation.put(TextToSpeech.Engine.KEY_PARAM_STREAM, TTS_INFORMATION_CODE);
-                    mUMIDPortal.put(TextToSpeech.Engine.KEY_PARAM_STREAM, TTS_PORTAL_CODE);
-                    mUMIDVote.put(TextToSpeech.Engine.KEY_PARAM_STREAM, TTS_VOTE_CODE);
-                }
+            if(mTts.isLanguageAvailable(indonesiaLocale)
+                == TextToSpeech.LANG_COUNTRY_AVAILABLE){
+                mTts.setLanguage(indonesiaLocale);
+                mUMIDInformation.put(TextToSpeech.Engine.KEY_PARAM_STREAM, TTS_INFORMATION_CODE);
+                mUMIDPortal.put(TextToSpeech.Engine.KEY_PARAM_STREAM, TTS_PORTAL_CODE);
+                mUMIDVote.put(TextToSpeech.Engine.KEY_PARAM_STREAM, TTS_VOTE_CODE);
+                mUMIDExit.put(TextToSpeech.Engine.KEY_PARAM_STREAM, TTS_EXIT);
+                mVoiceBtn.setVisibility(View.VISIBLE);
+            }else{
+                mVoiceBtn.setVisibility(View.GONE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Aplikasi membutuhkan Bahasa Indonesia untuk digunakan, " +
+                        "silahkan pasang bahasa Indonesia dan coba lagi.");
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) { } });
+                builder.show();
             }
 
             /**
@@ -741,6 +759,23 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
                         case TTS_VOTE_CODE:
                             speakForVote();
+                            break;
+
+                        case TTS_EXIT:
+                            final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+                            progressDialog.setMessage("Keluar dari akun ini, harap tunggu sebentar..");
+                            progressDialog.show();
+
+                            ParseUser.logOutInBackground(new LogOutCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    progressDialog.dismiss();
+                                    Intent intent = new Intent(getActivity(), DispatchActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    getActivity().startActivity(intent);
+                                }
+                            });
+
                             break;
                     }
                 }
