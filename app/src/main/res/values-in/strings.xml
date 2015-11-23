@@ -9,4 +9,5 @@
     <string name="vote_manual">Vote manual</string>
     <string name="vote_suara">Vote suara</string>
     <string name="voice_choose_your_candidate">Silahkan katakan pilihan Anda</string>
+    <string name="unsupported_language"></string>
 </resources>

@@ -50,6 +50,8 @@ import butterknife.ButterKnife;
  */
 public class MainFragment extends Fragment implements TextToSpeech.OnInitListener {
 
+    private static final String TAG = MainFragment.class.getSimpleName();
+
     private static final int SPEECH_INFORMATION_CODE = 1692;
     private static final int SPEECH_VOTE_CODE = 1693;
     private static final int SPEECH_PORTAL_CODE = 1694;
@@ -141,17 +143,11 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     }
 
     private void listenForPortal(){
-        String menuPiwali = ("Selamat datang di Suara Rakyat Surabaya, " +
-                "untuk informasi mengenai pilwali katakan satu, " +
-                "untuk memilih pasangan calon katakan dua, " +
-                "untuk keluar aplikasi katakan tiga"
-        );
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak(menuPiwali,
+            mTts.speak(getString(R.string.speak_main_menu),
                     TextToSpeech.QUEUE_FLUSH, null, TTS_PORTAL_CODE);
         }else{
-            mTts.speak(menuPiwali,
+            mTts.speak(getString(R.string.speak_main_menu),
                     TextToSpeech.QUEUE_FLUSH, mUMIDPortal);
         }
     }
@@ -189,7 +185,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             for(int i = 0; i < results.size(); i++){
                 String token = results.get(i).toLowerCase();
 
-                Log.d("asdf", "hasil: " + token);
                 if(token.contains("1") ||
                         token.contains("satu") ||
                         token.contains("pertama") ||
@@ -288,8 +283,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 }
             }
 
-            Log.d("asdf", "current infor menu " + mCurrentInfoMenu);
-
             if(mCurrentInfoMenu == MENU_INFO_CALON_KEDUA
                     || mCurrentInfoMenu == MENU_INFO_CALON_PERTAMA){
                 /**
@@ -326,8 +319,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                         token.contains("rasio") ||
                         token.contains("lucy")) {
 
-                    Log.d("asdf", "lucy dipilih");
-
                     // Inspect user choice first, if already exist. Update
                     ParseQuery query = ParseQuery.getQuery("Vote");
                     query.whereEqualTo("no_ktp",
@@ -338,10 +329,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                         @Override
                         public void done(List<ParseObject> objects, ParseException e) {
                             if(objects.size() > 0){
-                                Log.d("asdf", "object besar");
                                 updateVoteFor(objects.get(0), VOTE_RESULT_RASIYO_LUCY);
                             }else{
-                                Log.d("asdf", "object kecil");
                                 voteFor(VOTE_RESULT_RASIYO_LUCY);
                             }
 
@@ -353,10 +342,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                         token.contains("2") ||
                                 token.contains("dua") ||
                                 token.contains("kedua") ||
+                                token.contains("rhisma") ||
                                 token.contains("risma") ||
                                 token.contains("wisnu") ||
                                 token.contains("whisnu")) {
-                    Log.d("asdf", "risma dipilih");
 
                     // Inspect user choice first, if already exist. Update
                     ParseQuery query = ParseQuery.getQuery("Vote");
@@ -387,9 +376,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             // Success! File has already been installed
             if(resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS){
                 mTts = new TextToSpeech(getActivity(), this);
-                Log.d("asdf", "tts_data_check_code success");
             }else{
-                Log.d("asdf", "tts_data_check_code failed");
                 // fail, attempt to install tts
                 Intent installTts = new Intent();
                 installTts.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
@@ -419,10 +406,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             @Override
             public void done(ParseException e) {
                 if(updateCandidate == VOTE_RESULT_RASIYO_LUCY){
-                    Log.d("asdf", "UPDATE FOR LUCY");
                     listenForThankYouForVoting("Rasiyo Lucy");
                 }else {
-                    Log.d("asdf", "UPDATE FOR RISMA");
                     listenForThankYouForVoting("Risma Whisnu");
                 }
             }
@@ -437,10 +422,8 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             @Override
             public void done(ParseException e) {
                 if(candidate == VOTE_RESULT_RASIYO_LUCY){
-                    Log.d("asdf", "VOTE FOR LUCY");
                     listenForThankYouForVoting("Rasiyo Lucy");
                 }else {
-                    Log.d("asdf", "vote FOR risma");
                     listenForThankYouForVoting("Risma Whisnu");
                 }
             }
@@ -459,10 +442,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
     private void listenForThankYouForVoting(String person) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak("Terima kasih telah memilih " + person,
+            mTts.speak(getString(R.string.speak_thank_you_for_vote, person),
                     TextToSpeech.QUEUE_ADD, null, null);
         }else{
-            mTts.speak("Terima kasih telah memilih " + person,
+            mTts.speak(getString(R.string.speak_thank_you_for_vote, person),
                     TextToSpeech.QUEUE_ADD, null);
         }
         // after speaking thank you, back to portal
@@ -626,7 +609,6 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("asdf", "Something error");
                     }
                 }
         );
@@ -660,7 +642,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("asdf", "error nih " + error.getMessage());
+                        Log.d(TAG, "Volley Error:" + error.getMessage());
                     }
                 }
         );
@@ -727,11 +709,12 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             }else{
                 mVoiceBtn.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Aplikasi membutuhkan Bahasa Indonesia untuk digunakan, " +
-                        "silahkan pasang bahasa Indonesia dan coba lagi.");
+                builder.setMessage(R.string.unsupported_language);
                 builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) { } });
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
                 builder.show();
             }
 
@@ -741,13 +724,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override
                 public void onStart(String utteranceId) {
-                    Log.d("asdf", "start utteranceId " + utteranceId);
                 }
 
                 @Override
                 public void onDone(String utteranceId) {
-                    Log.d("asdf", "done utteranceId " + utteranceId);
-
                     switch (utteranceId){
                         case TTS_INFORMATION_CODE:
                             speakForInformation();
@@ -782,7 +762,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
                 @Override
                 public void onError(String utteranceId) {
-                    Log.d("asdf", "error " + utteranceId);
+                    Log.d(TAG, "UtteranceId Error " + utteranceId);
                 }
             });
 
@@ -794,7 +774,7 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             });
 
         }else if(status == TextToSpeech.ERROR){
-            Toast.makeText(getActivity(), "error bang ", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "TextToSpeech Error");
         }
     }
 
