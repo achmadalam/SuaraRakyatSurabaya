@@ -1,13 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Suara Rakyat Surabaya</string>
-    <string name="action_map">Peta</string>
-    <string name="action_settings">Pengaturan</string>
-    <string name="enter_no_ktp">Masukkan Nama dan No. KTP sesuai yang tertera dalam KTP</string>
-    <string name="locale"></string>
-    <string name="title_activity_maps">Peta</string>
-    <string name="vote_manual">Vote manual</string>
-    <string name="vote_suara">Vote suara</string>
+    <string name="action_settings">Settings</string>
     <string name="voice_choose_your_candidate">Silahkan katakan pilihan Anda</string>
-    <string name="unsupported_language"></string>
+    <string name="locale" translatable="false">in_ID</string>
+    <string name="action_map">Peta</string>
+    <string name="vote_suara">Vote Suara</string>
+    <string name="vote_manual">Vote manual</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="enter_no_ktp">Masukkan Nama dan No. KTP sesuai yang tertera dalam KTP</string>
+    <string name="text">Untuk informasi calon pertama
+        katakan satu. Untuk informasi calon kedua katakan dua.
+        Untuk informasi perolehan suara quick count katakan tiga.
+        Untuk kembali ke menu awal katakan empat.
+    </string>
+    <string name="unsupported_language">Aplikasi membutuhkan Bahasa Indonesia untuk digunakan,
+        silahkan pasang bahasa Indonesia dan coba lagi.</string>
+    <string name="exiting_account">Keluar dari akun ini, harap tunggu sebentar..</string>
+    <string name="speak_thank_you_for_vote">Terima kasih telah memilih</string>
+    <string name="speak_main_menu">Selamat datang di Suara Rakyat Surabaya, untuk informasi pilwali katakan satu, untuk memilih pasangan calon katakan dua, untuk keluar aplikasi katakan tiga</string>
+    <string name="speak_which_paslon">Paslon mana yang ingin Anda pilih? Rasiyo Lucy atau Risma Whisnu?</string>
+    <string name="speak_thank_you_for_using_this_app">Terima kasih %$1s, atas partisipasinya dalam pemilihan walikota Surabaya 2015 dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali</string>
+    <string name="speak_please_wait">Harap tunggu sebentar..</string>
+    <string name="speak_election_result">Jumlah pemilih Rasiyo Lucy adalah %$1d. Dan jumlah pemilih Risma Whisnu adalah %$2d</string>
+
 </resources>

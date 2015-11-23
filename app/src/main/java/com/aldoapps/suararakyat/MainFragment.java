@@ -154,12 +154,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
     private void listenForVote(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak("Paslon mana yang ingin Anda pilih? " +
-                            "Rasiyo Lucy atau Risma Whisnu?",
+            mTts.speak(getString(R.string.speak_which_paslon),
                     TextToSpeech.QUEUE_ADD, null, TTS_VOTE_CODE);
         }else{
-            mTts.speak("Paslon mana yang ingin Anda pilih? " +
-                            "Rasiyo Lucy atau Risma Whisnu?",
+            mTts.speak(getString(R.string.speak_which_paslon),
                     TextToSpeech.QUEUE_ADD, mUMIDVote);
         }
     }
@@ -388,14 +386,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
     private void listenForExit() {
         String namaPengguna = ParseUser.getCurrentUser().getUsername();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak("Terima kasih " + namaPengguna +
-                            ", atas partisipasinya dalam pemilihan walikota Surabaya 2015 " +
-                            "dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali",
+            mTts.speak(getString(R.string.speak_thank_you_for_using_this_app, namaPengguna),
                     TextToSpeech.QUEUE_ADD, null, TTS_EXIT);
         }else{
-            mTts.speak("Terima kasih " + namaPengguna +
-                            ", atas partisipasinya dalam pemilihan walikota Surabaya 2015 " +
-                            "dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali",
+            mTts.speak(getString(R.string.speak_thank_you_for_using_this_app, namaPengguna),
                     TextToSpeech.QUEUE_ADD, mUMIDExit);
         }
     }
@@ -432,10 +426,10 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
 
     private void listenForPleaseWait(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak("Harap tunggu sebentar..",
+            mTts.speak(getString(R.string.speak_please_wait),
                     TextToSpeech.QUEUE_ADD, null, null);
         }else{
-            mTts.speak("Harap tunggu sebentar..",
+            mTts.speak(getString(R.string.speak_please_wait),
                     TextToSpeech.QUEUE_ADD, null);
         }
     }
@@ -464,14 +458,11 @@ public class MainFragment extends Fragment implements TextToSpeech.OnInitListene
             }
         }
 
-        String currentVotes = "Jumlah pemilih Rasiyo Lucy adalah " + c1Amount +
-                ". Dan jumlah pemilih Risma Whisnu adalah " + c2Amount;
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTts.speak(currentVotes,
+            mTts.speak(getString(R.string.speak_election_result, c1Amount, c2Amount),
                     TextToSpeech.QUEUE_ADD, null, null);
         }else{
-            mTts.speak(currentVotes,
+            mTts.speak(getString(R.string.speak_election_result, c1Amount, c2Amount),
                     TextToSpeech.QUEUE_ADD, null);
         }
 

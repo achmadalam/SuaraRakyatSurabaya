@@ -18,5 +18,9 @@
     <string name="exiting_account">Keluar dari akun ini, harap tunggu sebentar..</string>
     <string name="speak_thank_you_for_vote">Terima kasih telah memilih</string>
     <string name="speak_main_menu">Selamat datang di Suara Rakyat Surabaya, untuk informasi pilwali katakan satu, untuk memilih pasangan calon katakan dua, untuk keluar aplikasi katakan tiga</string>
+    <string name="speak_which_paslon">Paslon mana yang ingin Anda pilih? Rasiyo Lucy atau Risma Whisnu?</string>
+    <string name="speak_thank_you_for_using_this_app">Terima kasih %$1s, atas partisipasinya dalam pemilihan walikota Surabaya 2015 dan menggunakan Suara Rakyat Surabaya. Selamat beraktifitas kembali</string>
+    <string name="speak_please_wait">Harap tunggu sebentar..</string>
+    <string name="speak_election_result">Jumlah pemilih Rasiyo Lucy adalah %$1d. Dan jumlah pemilih Risma Whisnu adalah %$2d</string>
 
 </resources>
